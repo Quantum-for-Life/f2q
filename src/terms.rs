@@ -309,6 +309,22 @@ pub mod sumrepr {
         }
     }
 
+    impl<T, K> Terms<(T, K)> for &SumRepr<T, K>
+    where
+        T: Add<Output = T> + Copy,
+        K: Code,
+    {
+        type Error = Error;
+
+        fn add_to(
+            self,
+            repr: &mut impl Extend<(T, K)>,
+        ) -> Result<(), Error> {
+            repr.extend(self.iter().map(|(&t, &k)| (t, k)));
+            Ok(())
+        }
+    }
+
     impl<T, K> Extend<(T, K)> for SumRepr<T, K>
     where
         T: Add<Output = T>,
