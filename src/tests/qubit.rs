@@ -1,7 +1,7 @@
 use crate::{
     code::qubits::{
+        pauli_group::PauliGroup,
         Pauli,
-        PauliGroup,
         Sigma,
     },
     math::{

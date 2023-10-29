@@ -5,8 +5,7 @@ use std::{
     ops::Mul,
 };
 
-pub use pauli_group::PauliGroup;
-
+use self::pauli_group::PauliGroup;
 use crate::{
     math::Root4,
     Error,
@@ -26,12 +25,7 @@ const PAULI_MASK: u64 = 0b11;
 ///
 /// assert_eq!(
 ///     paulis[0..=3],
-///     [
-///         Ok(Sigma::I),
-///         Ok(Sigma::X),
-///         Ok(Sigma::Y),
-///         Ok(Sigma::Z),
-///     ]
+///     [Ok(Sigma::I), Ok(Sigma::X), Ok(Sigma::Y), Ok(Sigma::Z),]
 /// );
 /// matches!(paulis[4], Err(QubitIndex { .. }));
 /// ```
@@ -541,14 +535,14 @@ impl Pauli {
     }
 }
 
-/// Iterate over Paulis in `Pauli`
+/// Iterate over `Sigma`s in `Pauli`
 #[derive(Debug)]
-pub struct PauliIter {
+pub struct IntoIter {
     code:  Pauli,
     index: u16,
 }
 
-impl PauliIter {
+impl IntoIter {
     fn new(code: Pauli) -> Self {
         Self {
             code,
@@ -557,7 +551,7 @@ impl PauliIter {
     }
 }
 
-impl Iterator for PauliIter {
+impl Iterator for IntoIter {
     type Item = Sigma;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -572,11 +566,11 @@ impl Iterator for PauliIter {
 }
 
 impl IntoIterator for Pauli {
-    type IntoIter = PauliIter;
+    type IntoIter = IntoIter;
     type Item = Sigma;
 
     fn into_iter(self) -> Self::IntoIter {
-        PauliIter::new(self)
+        IntoIter::new(self)
     }
 }
 
@@ -646,7 +640,7 @@ impl Mul for Pauli {
     }
 }
 
-mod pauli_group {
+pub(crate) mod pauli_group {
     use std::ops::Mul;
 
     use crate::{
@@ -712,7 +706,7 @@ mod pauli_group {
 
     /// Cross-product Root4 x `Pauli`
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-    pub struct PauliGroup(Root4, Pauli);
+    pub(crate) struct PauliGroup(Root4, Pauli);
 
     impl PauliGroup {
         #[must_use]
@@ -721,11 +715,6 @@ mod pauli_group {
             code: Pauli,
         ) -> Self {
             Self(omega, code)
-        }
-
-        #[must_use]
-        pub fn is_hermitian(&self) -> bool {
-            self.0 == Root4::R0 || self.0 == Root4::R1
         }
     }
 
