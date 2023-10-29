@@ -7,7 +7,7 @@ use clap::{
 
 /// Fermion to qubit mappings
 #[derive(Debug, Parser)]
-#[command(name = "f2q", version = "0.2.0")]
+#[command(name = "f2q", version = "0.3.0")]
 pub struct Cli {
     #[arg(long, short, default_value = "false")]
     pub verbose: bool,

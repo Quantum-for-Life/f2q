@@ -1,6 +1,6 @@
 [package]
 name = "f2q"
-version = "0.2.0"
+version = "0.3.0"
 description = "Fermion to qubit mappings"
 authors = ["Marek Miller", "⧉⧉⧉"]
 keywords = ["quantum", "qubit", "fermion", "Jordan-Wigner", "Bravyi-Kitaev"]
