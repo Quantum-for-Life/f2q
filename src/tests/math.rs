@@ -1,9 +1,7 @@
-use crate::{
-    math::{
-        ReIm,
-        Root4,
-    },
-    prelude::Group,
+use crate::math::{
+    Group,
+    ReIm,
+    Root4,
 };
 
 #[test]

@@ -37,14 +37,5 @@ impl Display for Error {
 
 impl std::error::Error for Error {}
 
-/// Import common traits and types.
-pub mod prelude {
-    pub use crate::{
-        code::Code,
-        math::Group,
-        terms::Terms,
-    };
-}
-
 #[cfg(test)]
 mod tests;

@@ -38,7 +38,7 @@ pub mod sumrepr {
 
     use super::Terms;
     use crate::{
-        prelude::Code,
+        code::Code,
         Error,
     };
 
