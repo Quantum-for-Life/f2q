@@ -9,7 +9,7 @@ use crate::{
             Orbital,
         },
         qubits::{
-            Pauli,
+            Paulis,
             Sigma,
         },
     },
@@ -46,8 +46,8 @@ macro_rules! impl_tryfrom_map {
 
 impl_tryfrom_map!(An Cr);
 
-fn pauli_codes_from_index(index: u16) -> (Pauli, Pauli) {
-    let code = Pauli::parity_op(index);
+fn pauli_codes_from_index(index: u16) -> (Paulis, Paulis) {
+    let code = Paulis::parity_op(index);
 
     let x = {
         let mut code = code;
@@ -75,10 +75,10 @@ impl Map {
     fn mul_iter<'a, T, I>(
         &'a self,
         rhs: I,
-    ) -> impl Iterator<Item = (ReIm<T>, Pauli)> + 'a
+    ) -> impl Iterator<Item = (ReIm<T>, Paulis)> + 'a
     where
         T: Float + 'a,
-        I: IntoIterator<Item = (ReIm<T>, Pauli)> + 'a,
+        I: IntoIterator<Item = (ReIm<T>, Paulis)> + 'a,
     {
         let one_half =
             T::from(0.5_f64).expect("floating point conversion from 0.5");
@@ -101,10 +101,10 @@ impl Map {
     }
 }
 
-fn iter_hermitian<'a, T, I>(iter: I) -> impl Iterator<Item = (T, Pauli)> + 'a
+fn iter_hermitian<'a, T, I>(iter: I) -> impl Iterator<Item = (T, Paulis)> + 'a
 where
     T: Float + 'a,
-    I: IntoIterator<Item = (ReIm<T>, Pauli)> + 'a,
+    I: IntoIterator<Item = (ReIm<T>, Paulis)> + 'a,
 {
     let two = T::from(2.0_f64).expect("floating point conversion from 2.0");
     iter.into_iter().filter_map(move |(x, p)| {
@@ -121,9 +121,9 @@ fn jw_map_two<'a, T: Float + 'a>(
     op1: &'a Map,
     op2: &'a Map,
     coeff: T,
-) -> impl Iterator<Item = (T, Pauli)> + 'a {
+) -> impl Iterator<Item = (T, Paulis)> + 'a {
     iter_hermitian(
-        op1.mul_iter(op2.mul_iter([(ReIm::Re(coeff), Pauli::identity())])),
+        op1.mul_iter(op2.mul_iter([(ReIm::Re(coeff), Paulis::identity())])),
     )
 }
 
@@ -134,9 +134,9 @@ fn jw_map_four<'a, T: Float + 'a>(
     op3: &'a Map,
     op4: &'a Map,
     coeff: T,
-) -> impl Iterator<Item = (T, Pauli)> + 'a {
+) -> impl Iterator<Item = (T, Paulis)> + 'a {
     iter_hermitian(op1.mul_iter(op2.mul_iter(
-        op3.mul_iter(op4.mul_iter([(ReIm::Re(coeff), Pauli::identity())])),
+        op3.mul_iter(op4.mul_iter([(ReIm::Re(coeff), Paulis::identity())])),
     )))
 }
 /// Jordan-Wigner mapping.
@@ -157,7 +157,7 @@ fn jw_map_four<'a, T: Float + 'a>(
 /// #             Orbital,
 /// #         },
 /// #         qubits::{
-/// #             Pauli,
+/// #             Paulis,
 /// #             Sigma,
 /// #         },
 /// #     },
@@ -183,9 +183,9 @@ fn jw_map_four<'a, T: Float + 'a>(
 /// JordanWigner::new(&fermi_repr).add_to(&mut pauli_repr)?;
 ///
 /// // We should obtain the following two Pauli strings with weights 1.0
-/// let code_i0 = Pauli::default();
+/// let code_i0 = Paulis::default();
 /// let code_z0 = {
-///     let mut code = Pauli::default();
+///     let mut code = Paulis::default();
 ///     code.set(idx.try_into().unwrap(), Sigma::Z);
 ///     code
 /// };
@@ -208,7 +208,7 @@ impl<'a, T> JordanWigner<'a, T> {
     }
 }
 
-impl<'a, T> Terms<(T, Pauli)> for JordanWigner<'a, T>
+impl<'a, T> Terms<(T, Paulis)> for JordanWigner<'a, T>
 where
     T: Float,
 {
@@ -216,12 +216,12 @@ where
 
     fn add_to(
         self,
-        repr: &mut impl Extend<(T, Pauli)>,
+        repr: &mut impl Extend<(T, Paulis)>,
     ) -> Result<(), Error> {
         for (&coeff, &code) in self.repr.iter() {
             match code {
                 Fermions::Offset => {
-                    repr.extend(Some((coeff, Pauli::identity())));
+                    repr.extend(Some((coeff, Paulis::identity())));
                 }
                 Fermions::One {
                     cr,
@@ -251,8 +251,8 @@ where
 #[cfg(test)]
 mod tests {
 
-    use Sigma::*;
     use ReIm::*;
+    use Sigma::*;
 
     use super::*;
 
@@ -261,13 +261,13 @@ mod tests {
         let jw_an = Map::try_from(An(Orbital::with_index(0))).unwrap();
 
         let result: Vec<_> =
-            jw_an.mul_iter([(Re(2.0), Pauli::identity())]).collect();
+            jw_an.mul_iter([(Re(2.0), Paulis::identity())]).collect();
 
         assert_eq!(
             result,
             &[
-                (Re(1.0), Pauli::with_ops([X])),
-                (Im(1.0), Pauli::with_ops([Y])),
+                (Re(1.0), Paulis::with_ops([X])),
+                (Im(1.0), Paulis::with_ops([Y])),
             ]
         );
     }
@@ -277,13 +277,13 @@ mod tests {
         let jw_cr = Map::try_from(Cr(Orbital::with_index(0))).unwrap();
 
         let result: Vec<_> =
-            jw_cr.mul_iter([(Re(2.0), Pauli::identity())]).collect();
+            jw_cr.mul_iter([(Re(2.0), Paulis::identity())]).collect();
 
         assert_eq!(
             result,
             &[
-                (Re(1.0), Pauli::with_ops([X])),
-                (Im(-1.0), Pauli::with_ops([Y])),
+                (Re(1.0), Paulis::with_ops([X])),
+                (Im(-1.0), Paulis::with_ops([Y])),
             ]
         );
     }
@@ -293,13 +293,13 @@ mod tests {
         let jw_an = Map::try_from(An(Orbital::with_index(3))).unwrap();
 
         let result: Vec<_> =
-            jw_an.mul_iter([(Re(2.0), Pauli::identity())]).collect();
+            jw_an.mul_iter([(Re(2.0), Paulis::identity())]).collect();
 
         assert_eq!(
             result,
             &[
-                (Re(1.0), Pauli::with_ops([Z, Z, Z, X])),
-                (Im(1.0), Pauli::with_ops([Z, Z, Z, Y])),
+                (Re(1.0), Paulis::with_ops([Z, Z, Z, X])),
+                (Im(1.0), Paulis::with_ops([Z, Z, Z, Y])),
             ]
         );
     }
@@ -309,13 +309,13 @@ mod tests {
         let jw_cr = Map::try_from(Cr(Orbital::with_index(3))).unwrap();
 
         let result: Vec<_> =
-            jw_cr.mul_iter([(Re(2.0), Pauli::identity())]).collect();
+            jw_cr.mul_iter([(Re(2.0), Paulis::identity())]).collect();
 
         assert_eq!(
             result,
             &[
-                (Re(1.0), Pauli::with_ops([Z, Z, Z, X])),
-                (Im(-1.0), Pauli::with_ops([Z, Z, Z, Y])),
+                (Re(1.0), Paulis::with_ops([Z, Z, Z, X])),
+                (Im(-1.0), Paulis::with_ops([Z, Z, Z, Y])),
             ]
         );
     }
@@ -326,16 +326,16 @@ mod tests {
         let jw_an_2 = Map::try_from(An(Orbital::with_index(0))).unwrap();
 
         let result: Vec<_> = jw_an_1
-            .mul_iter(jw_an_2.mul_iter([(Re(4.0), Pauli::identity())]))
+            .mul_iter(jw_an_2.mul_iter([(Re(4.0), Paulis::identity())]))
             .collect();
 
         assert_eq!(
             result,
             &[
-                (Re(1.0), Pauli::with_ops([I])),
-                (Re(1.0), Pauli::with_ops([Z])),
-                (Re(-1.0), Pauli::with_ops([Z])),
-                (Re(-1.0), Pauli::with_ops([I])),
+                (Re(1.0), Paulis::with_ops([I])),
+                (Re(1.0), Paulis::with_ops([Z])),
+                (Re(-1.0), Paulis::with_ops([Z])),
+                (Re(-1.0), Paulis::with_ops([I])),
             ]
         );
     }
@@ -346,16 +346,16 @@ mod tests {
         let jw_cr_2 = Map::try_from(Cr(Orbital::with_index(0))).unwrap();
 
         let result: Vec<_> = jw_cr_1
-            .mul_iter(jw_cr_2.mul_iter([(Re(4.0), Pauli::identity())]))
+            .mul_iter(jw_cr_2.mul_iter([(Re(4.0), Paulis::identity())]))
             .collect();
 
         assert_eq!(
             result,
             &[
-                (Re(1.0), Pauli::with_ops([I])),
-                (Re(-1.0), Pauli::with_ops([Z])),
-                (Re(1.0), Pauli::with_ops([Z])),
-                (Re(-1.0), Pauli::with_ops([I])),
+                (Re(1.0), Paulis::with_ops([I])),
+                (Re(-1.0), Paulis::with_ops([Z])),
+                (Re(1.0), Paulis::with_ops([Z])),
+                (Re(-1.0), Paulis::with_ops([I])),
             ]
         );
     }
@@ -366,16 +366,16 @@ mod tests {
         let jw_cr = Map::try_from(Cr(Orbital::with_index(0))).unwrap();
 
         let result: Vec<_> = jw_cr
-            .mul_iter(jw_an.mul_iter([(Re(4.0), Pauli::identity())]))
+            .mul_iter(jw_an.mul_iter([(Re(4.0), Paulis::identity())]))
             .collect();
 
         assert_eq!(
             result,
             &[
-                (Re(1.0), Pauli::with_ops([I])),
-                (Re(-1.0), Pauli::with_ops([Z])),
-                (Re(-1.0), Pauli::with_ops([Z])),
-                (Re(1.0), Pauli::with_ops([I])),
+                (Re(1.0), Paulis::with_ops([I])),
+                (Re(-1.0), Paulis::with_ops([Z])),
+                (Re(-1.0), Paulis::with_ops([Z])),
+                (Re(1.0), Paulis::with_ops([I])),
             ]
         );
     }
@@ -386,16 +386,16 @@ mod tests {
         let jw_cr = Map::try_from(Cr(Orbital::with_index(2))).unwrap();
 
         let result: Vec<_> = jw_cr
-            .mul_iter(jw_an.mul_iter([(Re(4.0), Pauli::identity())]))
+            .mul_iter(jw_an.mul_iter([(Re(4.0), Paulis::identity())]))
             .collect();
 
         assert_eq!(
             result,
             &[
-                (Re(1.0), Pauli::with_ops([I])),
-                (Re(-1.0), Pauli::with_ops([I, I, Z])),
-                (Re(-1.0), Pauli::with_ops([I, I, Z])),
-                (Re(1.0), Pauli::with_ops([I])),
+                (Re(1.0), Paulis::with_ops([I])),
+                (Re(-1.0), Paulis::with_ops([I, I, Z])),
+                (Re(-1.0), Paulis::with_ops([I, I, Z])),
+                (Re(1.0), Paulis::with_ops([I])),
             ]
         );
     }
@@ -406,16 +406,16 @@ mod tests {
         let jw_cr = Map::try_from(Cr(Orbital::with_index(1))).unwrap();
 
         let result: Vec<_> = jw_cr
-            .mul_iter(jw_an.mul_iter([(Re(4.0), Pauli::identity())]))
+            .mul_iter(jw_an.mul_iter([(Re(4.0), Paulis::identity())]))
             .collect();
 
         assert_eq!(
             result,
             &[
-                (Im(1.0), Pauli::with_ops([Y, X])),
-                (Re(1.0), Pauli::with_ops([Y, Y])),
-                (Re(1.0), Pauli::with_ops([X, X])),
-                (Im(-1.0), Pauli::with_ops([X, Y])),
+                (Im(1.0), Paulis::with_ops([Y, X])),
+                (Re(1.0), Paulis::with_ops([Y, Y])),
+                (Re(1.0), Paulis::with_ops([X, X])),
+                (Im(-1.0), Paulis::with_ops([X, Y])),
             ]
         );
     }
@@ -426,16 +426,16 @@ mod tests {
         let jw_cr = Map::try_from(Cr(Orbital::with_index(0))).unwrap();
 
         let result: Vec<_> = jw_cr
-            .mul_iter(jw_an.mul_iter([(Re(4.0), Pauli::identity())]))
+            .mul_iter(jw_an.mul_iter([(Re(4.0), Paulis::identity())]))
             .collect();
 
         assert_eq!(
             result,
             &[
-                (Im(-1.0), Pauli::with_ops([Y, X])),
-                (Re(1.0), Pauli::with_ops([X, X])),
-                (Re(1.0), Pauli::with_ops([Y, Y])),
-                (Im(1.0), Pauli::with_ops([X, Y])),
+                (Im(-1.0), Paulis::with_ops([Y, X])),
+                (Re(1.0), Paulis::with_ops([X, X])),
+                (Re(1.0), Paulis::with_ops([Y, Y])),
+                (Im(1.0), Paulis::with_ops([X, Y])),
             ]
         );
     }
@@ -446,16 +446,16 @@ mod tests {
         let jw_cr = Map::try_from(Cr(Orbital::with_index(2))).unwrap();
 
         let result: Vec<_> = jw_cr
-            .mul_iter(jw_an.mul_iter([(Re(4.0), Pauli::identity())]))
+            .mul_iter(jw_an.mul_iter([(Re(4.0), Paulis::identity())]))
             .collect();
 
         assert_eq!(
             result,
             &[
-                (Im(1.0), Pauli::with_ops([Y, Z, X])),
-                (Re(1.0), Pauli::with_ops([Y, Z, Y])),
-                (Re(1.0), Pauli::with_ops([X, Z, X])),
-                (Im(-1.0), Pauli::with_ops([X, Z, Y])),
+                (Im(1.0), Paulis::with_ops([Y, Z, X])),
+                (Re(1.0), Paulis::with_ops([Y, Z, Y])),
+                (Re(1.0), Paulis::with_ops([X, Z, X])),
+                (Im(-1.0), Paulis::with_ops([X, Z, Y])),
             ]
         );
     }

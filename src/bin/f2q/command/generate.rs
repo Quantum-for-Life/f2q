@@ -6,7 +6,7 @@ use f2q::{
             Fermions,
             Orbital,
         },
-        qubits::Pauli,
+        qubits::Paulis,
     },
     terms::SumRepr,
 };
@@ -104,7 +104,7 @@ fn qubits_random(args: &Generate) -> Result<(), Error> {
     let mut out_repr = SumRepr::with_capacity(capacity);
     for _ in 0..args.num_terms {
         out_repr.add_term(
-            Pauli::new((rng.gen(), rng.gen())),
+            Paulis::new((rng.gen(), rng.gen())),
             rng.gen_range(-1.0..1.0),
         );
     }

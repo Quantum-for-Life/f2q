@@ -101,23 +101,23 @@ impl From<Sigma> for String {
 /// # Examples
 ///
 /// ```rust
-/// # use f2q::code::qubits::Pauli;
-/// let code = Pauli::default();
+/// # use f2q::code::qubits::Paulis;
+/// let code = Paulis::default();
 ///
 /// assert_eq!(code.index(), 0);
 /// ```
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
-pub struct Pauli {
+pub struct Paulis {
     pack: (u64, u64),
 }
 
-impl Default for Pauli {
+impl Default for Paulis {
     fn default() -> Self {
         Self::new((0, 0))
     }
 }
 
-impl Pauli {
+impl Paulis {
     /// Create new code.
     ///
     /// The pauli product is specified by providing a tuple `(u64, u64)` with 2
@@ -133,14 +133,14 @@ impl Pauli {
     /// The first integer in the tuple represents qubits 0 to 31 (incl.),
     /// and the second integer represents qubits 32 to 63 (incl.).
     /// The pairs of bits in each integer follow the little-endian convention.
-    /// For example, `Pauli::new((0b1001, 0))` represents the following
+    /// For example, `Paulis::new((0b1001, 0))` represents the following
     /// Pauli product of 64 Pauli operators:
     ///
     /// ```text
     /// [X, Y, I, I, ... , I]
     /// ```
     ///
-    /// whereas `Pauli::new((0, 0b0111))` represents:
+    /// whereas `Paulis::new((0, 0b0111))` represents:
     ///
     /// ```text
     /// [I, I, .. I, Z, X, I, ... , I],
@@ -151,9 +151,9 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Paulis};
     ///
-    /// let code = Pauli::new((0b0100, 0b1110));
+    /// let code = Paulis::new((0b0100, 0b1110));
     ///
     /// assert_eq!(code.pauli(0), Some(Sigma::I));
     /// assert_eq!(code.pauli(1), Some(Sigma::X));
@@ -169,18 +169,18 @@ impl Pauli {
 
     /// Tensor product of identity operators.
     ///
-    /// This is the same as `Pauli::default()` or `Pauli::new((0,0))`.
+    /// This is the same as `Paulis::default()` or `Paulis::new((0,0))`.
     ///
     /// # Example
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Paulis};
     ///
-    /// let code = Pauli::identity();
+    /// let code = Paulis::identity();
     ///
-    /// assert_eq!(code, Pauli::new((0, 0)));
-    /// assert_eq!(code, Pauli::default());
-    /// assert_eq!(code, Pauli::with_ops([Sigma::I]));
+    /// assert_eq!(code, Paulis::new((0, 0)));
+    /// assert_eq!(code, Paulis::default());
+    /// assert_eq!(code, Paulis::with_ops([Sigma::I]));
     /// ```
     #[must_use]
     pub fn identity() -> Self {
@@ -198,8 +198,8 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::Pauli;
-    /// let code = Pauli::new((3, 4));
+    /// # use f2q::code::qubits::Paulis;
+    /// let code = Paulis::new((3, 4));
     ///
     /// assert_eq!(code.index(), 3 + (4 << 64));
     /// assert_eq!(u128::from(code), 3 + (4 << 64));
@@ -219,8 +219,8 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Pauli, Sigma};
-    /// let code = Pauli::new((0b1000, 0));
+    /// # use f2q::code::qubits::{Sigma, Paulis};
+    /// let code = Paulis::new((0b1000, 0));
     /// let pauli = unsafe { code.pauli_unchecked(1) };
     ///
     /// assert_eq!(pauli, Sigma::Y);
@@ -248,8 +248,8 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Pauli, Sigma};
-    /// let code = Pauli::new((0b1000, 0));
+    /// # use f2q::code::qubits::{Sigma, Paulis};
+    /// let code = Paulis::new((0b1000, 0));
     ///
     /// let pauli = code.pauli(1);
     /// assert_eq!(pauli, Some(Sigma::Y));
@@ -282,8 +282,8 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
-    /// let mut code = Pauli::new((0, 0b01));
+    /// # use f2q::code::qubits::{Sigma, Paulis};
+    /// let mut code = Paulis::new((0, 0b01));
     /// assert_eq!(code.pauli(32), Some(Sigma::X));
     ///
     /// unsafe {
@@ -320,8 +320,8 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
-    /// let mut code = Pauli::default();
+    /// # use f2q::code::qubits::{Sigma, Paulis};
+    /// let mut code = Paulis::default();
     /// assert_eq!(code.pauli(17), Some(Sigma::I));
     ///
     /// unsafe {
@@ -349,8 +349,8 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
-    /// let mut code = Pauli::new((0, 0b01));
+    /// # use f2q::code::qubits::{Sigma, Paulis};
+    /// let mut code = Paulis::new((0, 0b01));
     /// assert_eq!(code.pauli(32), Some(Sigma::X));
     ///
     /// code.pauli_mut(32, |x| {
@@ -394,8 +394,8 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
-    /// let mut code = Pauli::default();
+    /// # use f2q::code::qubits::{Sigma, Paulis};
+    /// let mut code = Paulis::default();
     /// assert_eq!(code.pauli(17), Some(Sigma::I));
     ///
     /// code.set(17, Sigma::Z);
@@ -421,14 +421,14 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Paulis};
     /// use f2q::code::qubits::Sigma::{
     ///     X,
     ///     Y,
     ///     Z,
     /// };
     ///
-    /// let code = Pauli::with_ops([X, Y, Z]);
+    /// let code = Paulis::with_ops([X, Y, Z]);
     ///
     /// assert_eq!(code.pauli(0), Some(X));
     /// assert_eq!(code.pauli(1), Some(Y));
@@ -465,21 +465,21 @@ impl Pauli {
     ///
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Paulis};
     ///
-    /// let par_op = Pauli::parity_op(2);
+    /// let par_op = Paulis::parity_op(2);
     ///
     /// assert_eq!(par_op.pauli(0), Some(Sigma::Z));
     /// assert_eq!(par_op.pauli(1), Some(Sigma::Z));
     /// assert_eq!(par_op.pauli(2), Some(Sigma::I));
     ///
-    /// assert_eq!(Pauli::parity_op(0), Pauli::identity());
+    /// assert_eq!(Paulis::parity_op(0), Paulis::identity());
     /// ```
     #[must_use]
     pub fn parity_op(num_qubits: u16) -> Self {
         assert!(num_qubits <= 64, "number of qubits must be within 1..=64");
 
-        Pauli::with_ops((0..num_qubits).map(|_| Sigma::Z))
+        Paulis::with_ops((0..num_qubits).map(|_| Sigma::Z))
     }
 
     /// Return the number of non-trivial Pauli operators.
@@ -490,8 +490,8 @@ impl Pauli {
     /// # Example
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
-    /// let code = Pauli::parity_op(3);
+    /// # use f2q::code::qubits::{Sigma, Paulis};
+    /// let code = Paulis::parity_op(3);
     ///
     /// assert_eq!(code.num_nontrivial(), 3);
     /// ```
@@ -510,7 +510,7 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Sigma, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Paulis};
     /// use Sigma::{
     ///     I,
     ///     X,
@@ -518,9 +518,9 @@ impl Pauli {
     ///     Z,
     /// };
     ///
-    /// assert_eq!(Pauli::identity().min_register_size(), 0);
+    /// assert_eq!(Paulis::identity().min_register_size(), 0);
     ///
-    /// let code = Pauli::with_ops([X, I, Y, I, Z, I, I]);
+    /// let code = Paulis::with_ops([X, I, Y, I, Z, I, I]);
     /// assert_eq!(code.min_register_size(), 5);
     /// ```
     #[must_use]
@@ -538,12 +538,12 @@ impl Pauli {
 /// Iterate over `Sigma`s in `Pauli`
 #[derive(Debug)]
 pub struct IntoIter {
-    code:  Pauli,
+    code:  Paulis,
     index: u16,
 }
 
 impl IntoIter {
-    fn new(code: Pauli) -> Self {
+    fn new(code: Paulis) -> Self {
         Self {
             code,
             index: 0,
@@ -565,7 +565,7 @@ impl Iterator for IntoIter {
     }
 }
 
-impl IntoIterator for Pauli {
+impl IntoIterator for Paulis {
     type IntoIter = IntoIter;
     type Item = Sigma;
 
@@ -574,7 +574,7 @@ impl IntoIterator for Pauli {
     }
 }
 
-impl Display for Pauli {
+impl Display for Paulis {
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter<'_>,
@@ -598,20 +598,20 @@ impl Display for Pauli {
     }
 }
 
-impl From<Pauli> for u128 {
-    fn from(value: Pauli) -> Self {
+impl From<Paulis> for u128 {
+    fn from(value: Paulis) -> Self {
         value.index()
     }
 }
 
-impl From<u128> for Pauli {
+impl From<u128> for Paulis {
     #[allow(clippy::cast_possible_truncation)]
     fn from(value: u128) -> Self {
         Self::new((value as u64, (value >> 64) as u64))
     }
 }
 
-impl PartialOrd for Pauli {
+impl PartialOrd for Paulis {
     fn partial_cmp(
         &self,
         other: &Self,
@@ -620,7 +620,7 @@ impl PartialOrd for Pauli {
     }
 }
 
-impl Ord for Pauli {
+impl Ord for Paulis {
     fn cmp(
         &self,
         other: &Self,
@@ -629,8 +629,8 @@ impl Ord for Pauli {
     }
 }
 
-impl Mul for Pauli {
-    type Output = (Root4, Pauli);
+impl Mul for Paulis {
+    type Output = (Root4, Paulis);
 
     fn mul(
         self,
@@ -645,7 +645,7 @@ pub(crate) mod pauli_group {
 
     use crate::{
         code::qubits::{
-            Pauli,
+            Paulis,
             Sigma,
         },
         math::{
@@ -706,31 +706,31 @@ pub(crate) mod pauli_group {
 
     /// Cross-product Root4 x `Pauli`
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-    pub(crate) struct PauliGroup(Root4, Pauli);
+    pub(crate) struct PauliGroup(Root4, Paulis);
 
     impl PauliGroup {
         #[must_use]
         pub fn new(
             omega: Root4,
-            code: Pauli,
+            code: Paulis,
         ) -> Self {
             Self(omega, code)
         }
     }
 
-    impl From<Pauli> for PauliGroup {
-        fn from(value: Pauli) -> Self {
+    impl From<Paulis> for PauliGroup {
+        fn from(value: Paulis) -> Self {
             Self::new(Root4::identity(), value)
         }
     }
 
     impl From<Root4> for PauliGroup {
         fn from(value: Root4) -> Self {
-            Self::new(value, Pauli::identity())
+            Self::new(value, Paulis::identity())
         }
     }
 
-    impl From<PauliGroup> for (Root4, Pauli) {
+    impl From<PauliGroup> for (Root4, Paulis) {
         fn from(value: PauliGroup) -> Self {
             (value.0, value.1)
         }
@@ -752,7 +752,7 @@ pub(crate) mod pauli_group {
                 },
             );
 
-            let code = Pauli::new((
+            let code = Paulis::new((
                 self.1.pack.0 ^ rhs.1.pack.0,
                 self.1.pack.1 ^ rhs.1.pack.1,
             ));
@@ -762,7 +762,7 @@ pub(crate) mod pauli_group {
 
     impl Group for PauliGroup {
         fn identity() -> Self {
-            Self(Root4::identity(), Pauli::default())
+            Self(Root4::identity(), Paulis::default())
         }
 
         fn inverse(self) -> Self {

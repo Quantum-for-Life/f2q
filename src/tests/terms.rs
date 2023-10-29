@@ -1,5 +1,5 @@
 use crate::{
-    code::qubits::Pauli,
+    code::qubits::Paulis,
     terms::{
         HeapRepr,
         StackRepr,
@@ -10,7 +10,7 @@ use crate::{
 
 #[test]
 fn sumrepr_init_01() {
-    let code = Pauli::new((1234, 0));
+    let code = Paulis::new((1234, 0));
     let mut hamil = SumRepr::new();
 
     hamil.update(code, 4321.);

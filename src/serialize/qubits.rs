@@ -10,7 +10,7 @@ use serde::{
 
 use crate::{
     code::qubits::{
-        Pauli,
+        Paulis,
         Sigma,
     },
     serialize::Encoding,
@@ -83,7 +83,7 @@ impl<'de> Deserialize<'de> for Sigma {
     }
 }
 
-impl Serialize for Pauli {
+impl Serialize for Paulis {
     fn serialize<S>(
         &self,
         serializer: S,
@@ -98,7 +98,7 @@ impl Serialize for Pauli {
 struct PauliVisitor;
 
 impl<'de> Visitor<'de> for PauliVisitor {
-    type Value = Pauli;
+    type Value = Paulis;
 
     fn expecting(
         &self,
@@ -120,7 +120,7 @@ impl<'de> Visitor<'de> for PauliVisitor {
             return Err(E::custom("str len out of range: 1..=64".to_string()));
         }
 
-        let mut code = Pauli::default();
+        let mut code = Paulis::default();
 
         for (i, ch) in v.chars().enumerate() {
             let pauli = match ch {
@@ -141,7 +141,7 @@ impl<'de> Visitor<'de> for PauliVisitor {
     }
 }
 
-impl<'de> Deserialize<'de> for Pauli {
+impl<'de> Deserialize<'de> for Paulis {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -152,11 +152,11 @@ impl<'de> Deserialize<'de> for Pauli {
 
 #[derive(Serialize, Deserialize)]
 struct PauliSumTerm<T> {
-    code:  Pauli,
+    code:  Paulis,
     value: T,
 }
 
-struct PauliSumSerSequence<'a, T>(&'a SumRepr<T, Pauli>);
+struct PauliSumSerSequence<'a, T>(&'a SumRepr<T, Paulis>);
 
 impl<'a, T> Serialize for PauliSumSerSequence<'a, T>
 where
@@ -191,7 +191,7 @@ where
     terms:    PauliSumSerSequence<'a, T>,
 }
 
-impl<T> Serialize for SumRepr<T, Pauli>
+impl<T> Serialize for SumRepr<T, Paulis>
 where
     T: Num + Copy + Serialize,
 {
@@ -211,7 +211,7 @@ where
     }
 }
 
-struct PauliSumDeSequence<T>(SumRepr<T, Pauli>);
+struct PauliSumDeSequence<T>(SumRepr<T, Paulis>);
 
 struct PauliSumVisitor<T> {
     _marker: PhantomData<T>,
@@ -282,7 +282,7 @@ where
     terms:    PauliSumDeSequence<T>,
 }
 
-impl<'de, T> Deserialize<'de> for SumRepr<T, Pauli>
+impl<'de, T> Deserialize<'de> for SumRepr<T, Paulis>
 where
     T: Num + Copy + Deserialize<'de>,
 {

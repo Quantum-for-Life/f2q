@@ -33,20 +33,8 @@ fn pauli_serialize_01() {
 
 #[test]
 fn pauli_deserialize_01() {
-    assert_eq!(
-        serde_json::from_str::<Sigma>("\"I\"").unwrap(),
-        Sigma::I
-    );
-    assert_eq!(
-        serde_json::from_str::<Sigma>("\"X\"").unwrap(),
-        Sigma::X
-    );
-    assert_eq!(
-        serde_json::from_str::<Sigma>("\"Y\"").unwrap(),
-        Sigma::Y
-    );
-    assert_eq!(
-        serde_json::from_str::<Sigma>("\"Z\"").unwrap(),
-        Sigma::Z
-    );
+    assert_eq!(serde_json::from_str::<Sigma>("\"I\"").unwrap(), Sigma::I);
+    assert_eq!(serde_json::from_str::<Sigma>("\"X\"").unwrap(), Sigma::X);
+    assert_eq!(serde_json::from_str::<Sigma>("\"Y\"").unwrap(), Sigma::Y);
+    assert_eq!(serde_json::from_str::<Sigma>("\"Z\"").unwrap(), Sigma::Z);
 }

@@ -3,14 +3,14 @@
 use crate::{
     code::{
         fermions::Fermions,
-        qubits::Pauli,
+        qubits::Paulis,
         Code,
     },
     Error,
 };
 
 pub type FermiSum = SumRepr<f64, Fermions>;
-pub type PauliSum = SumRepr<f64, Pauli>;
+pub type PauliSum = SumRepr<f64, Paulis>;
 
 #[doc(inline)]
 pub use sumrepr::SumRepr;
@@ -66,8 +66,8 @@ pub mod sumrepr {
         /// # Examples
         ///
         /// ```rust
-        /// # use f2q::{terms::SumRepr, code::qubits::Pauli};
-        /// let repr = SumRepr::<f64, Pauli>::new();
+        /// # use f2q::{terms::SumRepr, code::qubits::Paulis};
+        /// let repr = SumRepr::<f64, Paulis>::new();
         ///
         /// assert!(repr.is_empty());
         /// ```
@@ -86,8 +86,8 @@ pub mod sumrepr {
         /// # Examples
         ///
         /// ```rust
-        /// # use f2q::{terms::SumRepr, code::qubits::Pauli};
-        /// let repr = SumRepr::<f64, Pauli>::with_capacity(8);
+        /// # use f2q::{terms::SumRepr, code::qubits::Paulis};
+        /// let repr = SumRepr::<f64, Paulis>::with_capacity(8);
         ///
         /// assert!(repr.capacity() >= 8);
         /// ```
@@ -107,8 +107,8 @@ pub mod sumrepr {
         ///  /// # Examples
         ///
         /// ```rust
-        /// # use f2q::{terms::SumRepr, code::qubits::Pauli};
-        /// let repr = SumRepr::<f64, Pauli>::with_capacity(8);
+        /// # use f2q::{terms::SumRepr, code::qubits::Paulis};
+        /// let repr = SumRepr::<f64, Paulis>::with_capacity(8);
         ///
         /// assert!(repr.capacity() >= 8);
         /// ```
@@ -136,12 +136,12 @@ pub mod sumrepr {
         /// # Examples
         ///
         /// ```rust
-        /// # use f2q::{code::qubits::Pauli, terms::SumRepr};
+        /// # use f2q::{code::qubits::Paulis, terms::SumRepr};
         ///
         /// let mut repr = SumRepr::new();
         ///
-        /// repr.update(Pauli::default(), 0.5);
-        /// repr.update(Pauli::new((1, 0)), 0.5);
+        /// repr.update(Paulis::default(), 0.5);
+        /// repr.update(Paulis::new((1, 0)), 0.5);
         ///
         /// let sum = repr.iter().fold(0.0, |acc, (&coeff, _)| acc + coeff);
         ///
@@ -159,18 +159,18 @@ pub mod sumrepr {
         ///  /// # Examples
         ///
         /// ```rust
-        /// # use f2q::{code::qubits::Pauli, terms::SumRepr};
+        /// # use f2q::{code::qubits::Paulis, terms::SumRepr};
         ///
         /// let mut repr = SumRepr::new();
         ///
-        /// repr.update(Pauli::default(), 0.5);
-        /// repr.update(Pauli::new((1, 0)), 0.5);
+        /// repr.update(Paulis::default(), 0.5);
+        /// repr.update(Paulis::new((1, 0)), 0.5);
         /// for (coeff, _) in repr.iter_mut() {
         ///     *coeff += 0.1;
         /// }
         ///
-        /// assert_eq!(repr.coeff(Pauli::default()), Some(&0.6));
-        /// assert_eq!(repr.coeff(Pauli::new((1, 0))), Some(&0.6));
+        /// assert_eq!(repr.coeff(Paulis::default()), Some(&0.6));
+        /// assert_eq!(repr.coeff(Paulis::new((1, 0))), Some(&0.6));
         /// ```
         pub fn iter_mut(&mut self) -> impl Iterator<Item = (&mut T, &K)> {
             self.terms.iter_mut().map(|(code, coeff)| (coeff, code))
