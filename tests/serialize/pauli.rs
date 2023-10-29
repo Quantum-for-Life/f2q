@@ -5,7 +5,7 @@ use std::{
 
 use f2q::code::qubits::{
     Pauli,
-    PauliOp,
+    Sigma,
 };
 
 #[test]
@@ -42,7 +42,7 @@ fn serialize_01() {
     assert_eq!(json, "\"I\"");
 
     let code =
-        Pauli::with_ops([PauliOp::I, PauliOp::X, PauliOp::Y, PauliOp::Z]);
+        Pauli::with_ops([Sigma::I, Sigma::X, Sigma::Y, Sigma::Z]);
     let json = serde_json::to_string(&code).unwrap();
 
     assert_eq!(json, "\"IXYZ\"");
@@ -62,7 +62,7 @@ fn deserialize_01() {
     let code: Pauli = serde_json::from_str(data).unwrap();
     assert_eq!(
         code,
-        Pauli::with_ops([PauliOp::I, PauliOp::X, PauliOp::Y, PauliOp::Z])
+        Pauli::with_ops([Sigma::I, Sigma::X, Sigma::Y, Sigma::Z])
     );
 }
 
@@ -93,7 +93,7 @@ fn check_serde(code: Pauli) {
 
 #[test]
 fn serde_01() {
-    use PauliOp::{
+    use Sigma::{
         I,
         X,
         Y,
@@ -112,7 +112,7 @@ fn serde_01() {
 const PAULI_CODES: &str = "./tests/serialize/paulicodes.json";
 
 fn paulis_compare() -> [Pauli; 8] {
-    use PauliOp::*;
+    use Sigma::*;
     [
         Pauli::with_ops([]),
         Pauli::with_ops([X, X]),

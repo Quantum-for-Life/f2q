@@ -1,32 +1,32 @@
-use f2q::code::qubits::PauliOp;
+use f2q::code::qubits::Sigma;
 
 #[test]
 fn display() {
-    assert_eq!(PauliOp::I.to_string(), "I");
-    assert_eq!(PauliOp::X.to_string(), "X");
-    assert_eq!(PauliOp::Y.to_string(), "Y");
-    assert_eq!(PauliOp::Z.to_string(), "Z");
+    assert_eq!(Sigma::I.to_string(), "I");
+    assert_eq!(Sigma::X.to_string(), "X");
+    assert_eq!(Sigma::Y.to_string(), "Y");
+    assert_eq!(Sigma::Z.to_string(), "Z");
 }
 
 #[test]
 fn pauli_serialize_01() {
     assert_eq!(
-        serde_json::to_value(PauliOp::I).unwrap().as_str().unwrap(),
+        serde_json::to_value(Sigma::I).unwrap().as_str().unwrap(),
         "I"
     );
 
     assert_eq!(
-        serde_json::to_value(PauliOp::X).unwrap().as_str().unwrap(),
+        serde_json::to_value(Sigma::X).unwrap().as_str().unwrap(),
         "X"
     );
 
     assert_eq!(
-        serde_json::to_value(PauliOp::Y).unwrap().as_str().unwrap(),
+        serde_json::to_value(Sigma::Y).unwrap().as_str().unwrap(),
         "Y"
     );
 
     assert_eq!(
-        serde_json::to_value(PauliOp::Z).unwrap().as_str().unwrap(),
+        serde_json::to_value(Sigma::Z).unwrap().as_str().unwrap(),
         "Z"
     );
 }
@@ -34,19 +34,19 @@ fn pauli_serialize_01() {
 #[test]
 fn pauli_deserialize_01() {
     assert_eq!(
-        serde_json::from_str::<PauliOp>("\"I\"").unwrap(),
-        PauliOp::I
+        serde_json::from_str::<Sigma>("\"I\"").unwrap(),
+        Sigma::I
     );
     assert_eq!(
-        serde_json::from_str::<PauliOp>("\"X\"").unwrap(),
-        PauliOp::X
+        serde_json::from_str::<Sigma>("\"X\"").unwrap(),
+        Sigma::X
     );
     assert_eq!(
-        serde_json::from_str::<PauliOp>("\"Y\"").unwrap(),
-        PauliOp::Y
+        serde_json::from_str::<Sigma>("\"Y\"").unwrap(),
+        Sigma::Y
     );
     assert_eq!(
-        serde_json::from_str::<PauliOp>("\"Z\"").unwrap(),
-        PauliOp::Z
+        serde_json::from_str::<Sigma>("\"Z\"").unwrap(),
+        Sigma::Z
     );
 }

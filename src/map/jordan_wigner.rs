@@ -10,7 +10,7 @@ use crate::{
         },
         qubits::{
             Pauli,
-            PauliOp,
+            Sigma,
         },
     },
     math::ReIm,
@@ -51,12 +51,12 @@ fn pauli_codes_from_index(index: u16) -> (Pauli, Pauli) {
 
     let x = {
         let mut code = code;
-        code.set(index, PauliOp::X);
+        code.set(index, Sigma::X);
         code
     };
     let y = {
         let mut code = code;
-        code.set(index, PauliOp::Y);
+        code.set(index, Sigma::Y);
         code
     };
 
@@ -158,7 +158,7 @@ fn jw_map_four<'a, T: Float + 'a>(
 /// #         },
 /// #         qubits::{
 /// #             Pauli,
-/// #             PauliOp,
+/// #             Sigma,
 /// #         },
 /// #     },
 /// #     map::JordanWigner,
@@ -186,7 +186,7 @@ fn jw_map_four<'a, T: Float + 'a>(
 /// let code_i0 = Pauli::default();
 /// let code_z0 = {
 ///     let mut code = Pauli::default();
-///     code.set(idx.try_into().unwrap(), PauliOp::Z);
+///     code.set(idx.try_into().unwrap(), Sigma::Z);
 ///     code
 /// };
 ///
@@ -251,7 +251,7 @@ where
 #[cfg(test)]
 mod tests {
 
-    use PauliOp::*;
+    use Sigma::*;
     use ReIm::*;
 
     use super::*;

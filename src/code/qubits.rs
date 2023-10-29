@@ -19,24 +19,24 @@ const PAULI_MASK: u64 = 0b11;
 /// # Examples
 ///
 /// ```rust
-/// # use f2q::code::qubits::PauliOp;
+/// # use f2q::code::qubits::Sigma;
 /// use f2q::Error::QubitIndex;
 ///
-/// let paulis: Vec<_> = (0..=4).map(|i| PauliOp::try_from(i)).collect();
+/// let paulis: Vec<_> = (0..=4).map(|i| Sigma::try_from(i)).collect();
 ///
 /// assert_eq!(
 ///     paulis[0..=3],
 ///     [
-///         Ok(PauliOp::I),
-///         Ok(PauliOp::X),
-///         Ok(PauliOp::Y),
-///         Ok(PauliOp::Z),
+///         Ok(Sigma::I),
+///         Ok(Sigma::X),
+///         Ok(Sigma::Y),
+///         Ok(Sigma::Z),
 ///     ]
 /// );
 /// matches!(paulis[4], Err(QubitIndex { .. }));
 /// ```
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
-pub enum PauliOp {
+pub enum Sigma {
     #[default]
     I,
     X,
@@ -48,11 +48,11 @@ macro_rules! impl_pauli_int {
     ( $($Typ:ty)* ) => {
         $(
 
-            impl TryFrom<$Typ> for PauliOp {
+            impl TryFrom<$Typ> for Sigma {
                 type Error = Error;
 
                 fn try_from(value: $Typ) -> Result<Self, Self::Error> {
-                    use PauliOp::*;
+                    use Sigma::*;
                     match value {
                         0 => Ok(I),
                         1 => Ok(X),
@@ -63,13 +63,13 @@ macro_rules! impl_pauli_int {
                 }
             }
 
-            impl From<PauliOp> for $Typ {
-                fn from(value: PauliOp) -> Self {
+            impl From<Sigma> for $Typ {
+                fn from(value: Sigma) -> Self {
                     match value {
-                        PauliOp::I => 0,
-                        PauliOp::X => 1,
-                        PauliOp::Y => 2,
-                        PauliOp::Z => 3,
+                        Sigma::I => 0,
+                        Sigma::X => 1,
+                        Sigma::Y => 2,
+                        Sigma::Z => 3,
                     }
                 }
             }
@@ -81,23 +81,23 @@ macro_rules! impl_pauli_int {
 impl_pauli_int!(u8 u16 u32 u64 u128 usize);
 impl_pauli_int!(i8 i16 i32 i64 i128 isize);
 
-impl Display for PauliOp {
+impl Display for Sigma {
     fn fmt(
         &self,
         f: &mut std::fmt::Formatter<'_>,
     ) -> std::fmt::Result {
         let str_repr = match self {
-            PauliOp::I => "I",
-            PauliOp::X => "X",
-            PauliOp::Y => "Y",
-            PauliOp::Z => "Z",
+            Sigma::I => "I",
+            Sigma::X => "X",
+            Sigma::Y => "Y",
+            Sigma::Z => "Z",
         };
         write!(f, "{str_repr}")
     }
 }
 
-impl From<PauliOp> for String {
-    fn from(value: PauliOp) -> Self {
+impl From<Sigma> for String {
+    fn from(value: Sigma) -> Self {
         value.to_string()
     }
 }
@@ -130,10 +130,10 @@ impl Pauli {
     /// bits for each Pauli operator in the tensor product:
     ///
     /// ```text
-    /// PauliOp::I = 0b00
-    /// PauliOp::X = 0b01
-    /// PauliOp::Y = 0b10
-    /// PauliOp::Z = 0b11
+    /// Sigma::I = 0b00
+    /// Sigma::X = 0b01
+    /// Sigma::Y = 0b10
+    /// Sigma::Z = 0b11
     /// ```
     ///
     /// The first integer in the tuple represents qubits 0 to 31 (incl.),
@@ -157,14 +157,14 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Pauli};
     ///
     /// let code = Pauli::new((0b0100, 0b1110));
     ///
-    /// assert_eq!(code.pauli(0), Some(PauliOp::I));
-    /// assert_eq!(code.pauli(1), Some(PauliOp::X));
-    /// assert_eq!(code.pauli(32), Some(PauliOp::Y));
-    /// assert_eq!(code.pauli(33), Some(PauliOp::Z));
+    /// assert_eq!(code.pauli(0), Some(Sigma::I));
+    /// assert_eq!(code.pauli(1), Some(Sigma::X));
+    /// assert_eq!(code.pauli(32), Some(Sigma::Y));
+    /// assert_eq!(code.pauli(33), Some(Sigma::Z));
     /// ```
     #[must_use]
     pub fn new(pack: (u64, u64)) -> Self {
@@ -180,13 +180,13 @@ impl Pauli {
     /// # Example
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Pauli};
     ///
     /// let code = Pauli::identity();
     ///
     /// assert_eq!(code, Pauli::new((0, 0)));
     /// assert_eq!(code, Pauli::default());
-    /// assert_eq!(code, Pauli::with_ops([PauliOp::I]));
+    /// assert_eq!(code, Pauli::with_ops([Sigma::I]));
     /// ```
     #[must_use]
     pub fn identity() -> Self {
@@ -225,24 +225,24 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Pauli, PauliOp};
+    /// # use f2q::code::qubits::{Pauli, Sigma};
     /// let code = Pauli::new((0b1000, 0));
     /// let pauli = unsafe { code.pauli_unchecked(1) };
     ///
-    /// assert_eq!(pauli, PauliOp::Y);
+    /// assert_eq!(pauli, Sigma::Y);
     /// ```
     #[must_use]
     #[allow(clippy::missing_panics_doc)]
     pub unsafe fn pauli_unchecked(
         &self,
         index: u16,
-    ) -> PauliOp {
+    ) -> Sigma {
         let pauli_int = if index < 32 {
             (self.pack.0 >> (index * 2)) & PAULI_MASK
         } else {
             (self.pack.1 >> ((index - 32) * 2)) & PAULI_MASK
         };
-        PauliOp::try_from(pauli_int).expect("incorrect encoding. This is a bug")
+        Sigma::try_from(pauli_int).expect("incorrect encoding. This is a bug")
     }
 
     /// Read out the Pauli operator at site `i`.
@@ -254,11 +254,11 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{Pauli, PauliOp};
+    /// # use f2q::code::qubits::{Pauli, Sigma};
     /// let code = Pauli::new((0b1000, 0));
     ///
     /// let pauli = code.pauli(1);
-    /// assert_eq!(pauli, Some(PauliOp::Y));
+    /// assert_eq!(pauli, Some(Sigma::Y));
     ///
     /// let pauli = code.pauli(64);
     /// assert_eq!(pauli, None);
@@ -267,7 +267,7 @@ impl Pauli {
     pub fn pauli(
         &self,
         index: u16,
-    ) -> Option<PauliOp> {
+    ) -> Option<Sigma> {
         if index >= 64 {
             None
         } else {
@@ -288,22 +288,22 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Pauli};
     /// let mut code = Pauli::new((0, 0b01));
-    /// assert_eq!(code.pauli(32), Some(PauliOp::X));
+    /// assert_eq!(code.pauli(32), Some(Sigma::X));
     ///
     /// unsafe {
-    ///     code.pauli_mut_unchecked(32, |pauli| *pauli = PauliOp::Y);
+    ///     code.pauli_mut_unchecked(32, |pauli| *pauli = Sigma::Y);
     /// }
     ///
-    /// assert_eq!(code.pauli(32), Some(PauliOp::Y));
+    /// assert_eq!(code.pauli(32), Some(Sigma::Y));
     /// ```
     pub unsafe fn pauli_mut_unchecked<OP>(
         &mut self,
         index: u16,
         f: OP,
     ) where
-        OP: FnOnce(&mut PauliOp),
+        OP: FnOnce(&mut Sigma),
     {
         let mut pauli = self.pauli_unchecked(index);
         f(&mut pauli);
@@ -326,20 +326,20 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Pauli};
     /// let mut code = Pauli::default();
-    /// assert_eq!(code.pauli(17), Some(PauliOp::I));
+    /// assert_eq!(code.pauli(17), Some(Sigma::I));
     ///
     /// unsafe {
-    ///     code.set_unchecked(17, PauliOp::Z);
+    ///     code.set_unchecked(17, Sigma::Z);
     /// }
     ///
-    /// assert_eq!(code.pauli(17), Some(PauliOp::Z));
+    /// assert_eq!(code.pauli(17), Some(Sigma::Z));
     /// ```
     pub unsafe fn set_unchecked(
         &mut self,
         index: u16,
-        pauli: PauliOp,
+        pauli: Sigma,
     ) {
         self.pauli_mut_unchecked(index, |p| {
             *p = pauli;
@@ -355,16 +355,16 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Pauli};
     /// let mut code = Pauli::new((0, 0b01));
-    /// assert_eq!(code.pauli(32), Some(PauliOp::X));
+    /// assert_eq!(code.pauli(32), Some(Sigma::X));
     ///
     /// code.pauli_mut(32, |x| {
     ///     if let Some(pauli) = x {
-    ///         *pauli = PauliOp::Y
+    ///         *pauli = Sigma::Y
     ///     }
     /// });
-    /// assert_eq!(code.pauli(32), Some(PauliOp::Y));
+    /// assert_eq!(code.pauli(32), Some(Sigma::Y));
     ///
     /// let mut was_it_none = false;
     /// code.pauli_mut(64, |x| {
@@ -379,14 +379,14 @@ impl Pauli {
         index: u16,
         f: OP,
     ) where
-        OP: FnOnce(Option<&mut PauliOp>),
+        OP: FnOnce(Option<&mut Sigma>),
     {
         if index >= 64 {
             f(None);
         } else {
             // SAFETY: We just checked if index is within bounds
             unsafe {
-                self.pauli_mut_unchecked(index, |x: &mut PauliOp| f(Some(x)));
+                self.pauli_mut_unchecked(index, |x: &mut Sigma| f(Some(x)));
             }
         }
     }
@@ -400,18 +400,18 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Pauli};
     /// let mut code = Pauli::default();
-    /// assert_eq!(code.pauli(17), Some(PauliOp::I));
+    /// assert_eq!(code.pauli(17), Some(Sigma::I));
     ///
-    /// code.set(17, PauliOp::Z);
+    /// code.set(17, Sigma::Z);
     ///
-    /// assert_eq!(code.pauli(17), Some(PauliOp::Z));
+    /// assert_eq!(code.pauli(17), Some(Sigma::Z));
     /// ```
     pub fn set(
         &mut self,
         index: u16,
-        pauli: PauliOp,
+        pauli: Sigma,
     ) {
         self.pauli_mut(index, |x| {
             if let Some(p) = x {
@@ -427,8 +427,8 @@ impl Pauli {
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
-    /// use f2q::code::qubits::PauliOp::{
+    /// # use f2q::code::qubits::{Sigma, Pauli};
+    /// use f2q::code::qubits::Sigma::{
     ///     X,
     ///     Y,
     ///     Z,
@@ -443,7 +443,7 @@ impl Pauli {
     #[allow(clippy::missing_panics_doc)]
     pub fn with_ops<I>(iter: I) -> Self
     where
-        I: IntoIterator<Item = PauliOp>,
+        I: IntoIterator<Item = Sigma>,
     {
         let mut code = Self::default();
         for (i, pauli) in iter.into_iter().take(64).enumerate() {
@@ -461,7 +461,7 @@ impl Pauli {
     /// Parity operator.
     ///
     /// Returns code that consists of a consecutive string of `num_qubits`
-    /// [`PauliOp::Z`].
+    /// [`Sigma::Z`].
     ///
     /// # Panics
     ///
@@ -471,13 +471,13 @@ impl Pauli {
     ///
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Pauli};
     ///
     /// let par_op = Pauli::parity_op(2);
     ///
-    /// assert_eq!(par_op.pauli(0), Some(PauliOp::Z));
-    /// assert_eq!(par_op.pauli(1), Some(PauliOp::Z));
-    /// assert_eq!(par_op.pauli(2), Some(PauliOp::I));
+    /// assert_eq!(par_op.pauli(0), Some(Sigma::Z));
+    /// assert_eq!(par_op.pauli(1), Some(Sigma::Z));
+    /// assert_eq!(par_op.pauli(2), Some(Sigma::I));
     ///
     /// assert_eq!(Pauli::parity_op(0), Pauli::identity());
     /// ```
@@ -485,18 +485,18 @@ impl Pauli {
     pub fn parity_op(num_qubits: u16) -> Self {
         assert!(num_qubits <= 64, "number of qubits must be within 1..=64");
 
-        Pauli::with_ops((0..num_qubits).map(|_| PauliOp::Z))
+        Pauli::with_ops((0..num_qubits).map(|_| Sigma::Z))
     }
 
     /// Return the number of non-trivial Pauli operators.
     ///
-    /// The value returned is equal to the number of [`PauliOp`]s in self
-    /// that are different than `PauliOp::I`.
+    /// The value returned is equal to the number of [`Sigma`]s in self
+    /// that are different than `Sigma::I`.
     ///
     /// # Example
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
+    /// # use f2q::code::qubits::{Sigma, Pauli};
     /// let code = Pauli::parity_op(3);
     ///
     /// assert_eq!(code.num_nontrivial(), 3);
@@ -504,20 +504,20 @@ impl Pauli {
     #[must_use]
     #[allow(clippy::missing_panics_doc)]
     pub fn num_nontrivial(&self) -> u8 {
-        u8::try_from(self.into_iter().filter(|&x| x != PauliOp::I).count())
+        u8::try_from(self.into_iter().filter(|&x| x != Sigma::I).count())
             .expect("pauli iterator has no more than 64 elements")
     }
 
     /// Return the minimal size of a qubit register that would fit the code.
     ///
-    /// The value returned is simply the number of all [`PauliOp`]'s that remain
-    /// after removing the trailing `PauliOp::I`.
+    /// The value returned is simply the number of all [`Sigma`]'s that remain
+    /// after removing the trailing `Sigma::I`.
     ///
     /// # Examples
     ///
     /// ```rust
-    /// # use f2q::code::qubits::{PauliOp, Pauli};
-    /// use PauliOp::{
+    /// # use f2q::code::qubits::{Sigma, Pauli};
+    /// use Sigma::{
     ///     I,
     ///     X,
     ///     Y,
@@ -558,7 +558,7 @@ impl PauliIter {
 }
 
 impl Iterator for PauliIter {
-    type Item = PauliOp;
+    type Item = Sigma;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.index >= 64 {
@@ -573,7 +573,7 @@ impl Iterator for PauliIter {
 
 impl IntoIterator for Pauli {
     type IntoIter = PauliIter;
-    type Item = PauliOp;
+    type Item = Sigma;
 
     fn into_iter(self) -> Self::IntoIter {
         PauliIter::new(self)
@@ -591,10 +591,10 @@ impl Display for Pauli {
             let mut pauli_str = String::with_capacity(64);
             for pauli in self.into_iter() {
                 let ch = match pauli {
-                    PauliOp::I => 'I',
-                    PauliOp::X => 'X',
-                    PauliOp::Y => 'Y',
-                    PauliOp::Z => 'Z',
+                    Sigma::I => 'I',
+                    Sigma::X => 'X',
+                    Sigma::Y => 'Y',
+                    Sigma::Z => 'Z',
                 };
                 pauli_str.push(ch);
             }
@@ -652,7 +652,7 @@ mod pauli_group {
     use crate::{
         code::qubits::{
             Pauli,
-            PauliOp,
+            Sigma,
         },
         math::{
             Group,
@@ -660,7 +660,7 @@ mod pauli_group {
         },
     };
 
-    struct PGrp(Root4, PauliOp);
+    struct PGrp(Root4, Sigma);
 
     impl Mul for PGrp {
         type Output = Self;
@@ -675,24 +675,24 @@ mod pauli_group {
                 R3,
             };
             let (omega, pauli) = match self.1 {
-                PauliOp::I => (R0, rhs.1),
-                PauliOp::X => match rhs.1 {
-                    PauliOp::I => (R0, PauliOp::X),
-                    PauliOp::X => (R0, PauliOp::I),
-                    PauliOp::Y => (R2, PauliOp::Z),
-                    PauliOp::Z => (R3, PauliOp::Y),
+                Sigma::I => (R0, rhs.1),
+                Sigma::X => match rhs.1 {
+                    Sigma::I => (R0, Sigma::X),
+                    Sigma::X => (R0, Sigma::I),
+                    Sigma::Y => (R2, Sigma::Z),
+                    Sigma::Z => (R3, Sigma::Y),
                 },
-                PauliOp::Y => match rhs.1 {
-                    PauliOp::I => (R0, PauliOp::Y),
-                    PauliOp::X => (R3, PauliOp::Z),
-                    PauliOp::Y => (R0, PauliOp::I),
-                    PauliOp::Z => (R2, PauliOp::X),
+                Sigma::Y => match rhs.1 {
+                    Sigma::I => (R0, Sigma::Y),
+                    Sigma::X => (R3, Sigma::Z),
+                    Sigma::Y => (R0, Sigma::I),
+                    Sigma::Z => (R2, Sigma::X),
                 },
-                PauliOp::Z => match rhs.1 {
-                    PauliOp::I => (R0, PauliOp::Z),
-                    PauliOp::X => (R2, PauliOp::Y),
-                    PauliOp::Y => (R3, PauliOp::X),
-                    PauliOp::Z => (R0, PauliOp::I),
+                Sigma::Z => match rhs.1 {
+                    Sigma::I => (R0, Sigma::Z),
+                    Sigma::X => (R2, Sigma::Y),
+                    Sigma::Y => (R3, Sigma::X),
+                    Sigma::Z => (R0, Sigma::I),
                 },
             };
 
@@ -702,7 +702,7 @@ mod pauli_group {
 
     impl Group for PGrp {
         fn identity() -> Self {
-            Self(Root4::R0, PauliOp::I)
+            Self(Root4::R0, Sigma::I)
         }
 
         fn inverse(self) -> Self {

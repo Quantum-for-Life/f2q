@@ -2,7 +2,7 @@ use crate::{
     code::qubits::{
         Pauli,
         PauliGroup,
-        PauliOp,
+        Sigma,
     },
     math::{
         Group,
@@ -27,10 +27,10 @@ fn default() {
 fn pauli_02() {
     let code = Pauli::new((0b0101, 0b00));
 
-    assert_eq!(code.pauli(0), Some(PauliOp::X));
-    assert_eq!(code.pauli(1), Some(PauliOp::X));
-    assert_eq!(code.pauli(2), Some(PauliOp::I));
-    assert_eq!(code.pauli(63), Some(PauliOp::I));
+    assert_eq!(code.pauli(0), Some(Sigma::X));
+    assert_eq!(code.pauli(1), Some(Sigma::X));
+    assert_eq!(code.pauli(2), Some(Sigma::I));
+    assert_eq!(code.pauli(63), Some(Sigma::I));
 
     assert_eq!(code.pauli(64), None);
     assert_eq!(code.pauli(123), None);
@@ -39,33 +39,33 @@ fn pauli_02() {
 #[test]
 fn pauli_mut_01() {
     let mut code = Pauli::default();
-    assert_eq!(code.pauli(7).unwrap(), PauliOp::I);
+    assert_eq!(code.pauli(7).unwrap(), Sigma::I);
 
     code.pauli_mut(7, |x| {
         if let Some(pauli) = x {
-            *pauli = PauliOp::Z;
+            *pauli = Sigma::Z;
         }
     });
-    assert_eq!(code.pauli(7).unwrap(), PauliOp::Z);
+    assert_eq!(code.pauli(7).unwrap(), Sigma::Z);
 }
 
 #[test]
 fn set_pauli_01() {
     let mut code = Pauli::new((29_332_281_938, 0b00));
-    assert_eq!(code.pauli(7).unwrap(), PauliOp::I);
+    assert_eq!(code.pauli(7).unwrap(), Sigma::I);
 
-    code.set(7, PauliOp::Y);
-    assert_eq!(code.pauli(7).unwrap(), PauliOp::Y);
+    code.set(7, Sigma::Y);
+    assert_eq!(code.pauli(7).unwrap(), Sigma::Y);
 }
 
 #[test]
 #[should_panic(expected = "index should be within 0..64")]
 fn set_pauli_02() {
     let mut code = Pauli::default();
-    assert_eq!(code.pauli(7).unwrap(), PauliOp::I);
+    assert_eq!(code.pauli(7).unwrap(), Sigma::I);
 
-    code.set(65, PauliOp::Y);
-    assert_eq!(code.pauli(7).unwrap(), PauliOp::Y);
+    code.set(65, Sigma::Y);
+    assert_eq!(code.pauli(7).unwrap(), Sigma::Y);
 }
 
 #[test]
@@ -73,32 +73,32 @@ fn set_pauli_03() {
     let mut code = Pauli::default();
 
     for i in 0..13 {
-        code.set(i, PauliOp::X);
+        code.set(i, Sigma::X);
     }
     for i in 13..29 {
-        code.set(i, PauliOp::Y);
+        code.set(i, Sigma::Y);
     }
     for i in 29..61 {
-        code.set(i, PauliOp::Z);
+        code.set(i, Sigma::Z);
     }
 
     for i in 0..13 {
-        assert_eq!(code.pauli(i).unwrap(), PauliOp::X, "{i}");
+        assert_eq!(code.pauli(i).unwrap(), Sigma::X, "{i}");
     }
     for i in 13..29 {
-        assert_eq!(code.pauli(i).unwrap(), PauliOp::Y, "{i}");
+        assert_eq!(code.pauli(i).unwrap(), Sigma::Y, "{i}");
     }
     for i in 29..61 {
-        assert_eq!(code.pauli(i).unwrap(), PauliOp::Z, "{i}");
+        assert_eq!(code.pauli(i).unwrap(), Sigma::Z, "{i}");
     }
     for i in 61..64 {
-        assert_eq!(code.pauli(i).unwrap(), PauliOp::I, "{i}");
+        assert_eq!(code.pauli(i).unwrap(), Sigma::I, "{i}");
     }
 }
 
 #[test]
 fn codes_iter_01() {
-    use PauliOp::*;
+    use Sigma::*;
     let result = Pauli::new((0b01, 0b00))
         .into_iter()
         .take(3)
@@ -109,7 +109,7 @@ fn codes_iter_01() {
 
 #[test]
 fn codes_iter_02() {
-    use PauliOp::*;
+    use Sigma::*;
     let result = Pauli::new((0b11_1001, 0b00))
         .into_iter()
         .take(5)
@@ -120,7 +120,7 @@ fn codes_iter_02() {
 
 #[test]
 fn codes_iter_03() {
-    use PauliOp::*;
+    use Sigma::*;
     let result = Pauli::new((0b0101_0000, 0b1111_1010))
         .into_iter()
         .take(36)
@@ -137,7 +137,7 @@ fn codes_iter_03() {
 
 #[test]
 fn from_paulis_01() {
-    use PauliOp::*;
+    use Sigma::*;
 
     assert_eq!(
         Pauli::with_ops([I, X, Y, Z]),
@@ -147,7 +147,7 @@ fn from_paulis_01() {
 
 #[test]
 fn from_paulis_02() {
-    use PauliOp::*;
+    use Sigma::*;
 
     assert_eq!(
         Pauli::with_ops([
@@ -175,7 +175,7 @@ fn from_u128() {
 
 #[test]
 fn pauli_num_nontrivial() {
-    use PauliOp::*;
+    use Sigma::*;
 
     assert_eq!(Pauli::with_ops([]).num_nontrivial(), 0);
     assert_eq!(Pauli::with_ops([X]).num_nontrivial(), 1);
@@ -225,7 +225,7 @@ fn pauli_num_nontrivial() {
 
 #[test]
 fn pauli_min_register_size_01() {
-    use PauliOp::{
+    use Sigma::{
         I,
         X,
         Y,
@@ -253,7 +253,7 @@ fn pauli_min_register_size_01() {
 
 #[test]
 fn pauli_min_register_size_02() {
-    use PauliOp::{
+    use Sigma::{
         I,
         X,
         Y,
@@ -358,7 +358,7 @@ fn paui_group_01() {
 
 #[test]
 fn paui_group_02() {
-    use PauliOp::*;
+    use Sigma::*;
     let g = PauliGroup::new(Root4::R0, Pauli::with_ops([X, Y, Z]));
     let e = PauliGroup::identity();
 
@@ -367,7 +367,7 @@ fn paui_group_02() {
 
 #[test]
 fn paui_group_03() {
-    use PauliOp::*;
+    use Sigma::*;
     let g = PauliGroup::new(Root4::R0, Pauli::with_ops([X, Y, Z]));
 
     let h = PauliGroup::new(Root4::R0, Pauli::with_ops([X]));
@@ -383,7 +383,7 @@ fn paui_group_03() {
 
 #[test]
 fn paui_group_04() {
-    use PauliOp::*;
+    use Sigma::*;
     let g = PauliGroup::new(Root4::R0, Pauli::with_ops([X, Y, Z]));
 
     let h = PauliGroup::new(Root4::R0, Pauli::with_ops([Y]));
@@ -399,7 +399,7 @@ fn paui_group_04() {
 
 #[test]
 fn paui_group_05() {
-    use PauliOp::*;
+    use Sigma::*;
     let g = PauliGroup::new(Root4::R0, Pauli::with_ops([X, Y, Z]));
 
     let h = PauliGroup::new(Root4::R3, Pauli::with_ops([I, Z]));
@@ -415,7 +415,7 @@ fn paui_group_05() {
 
 #[test]
 fn paui_group_06() {
-    use PauliOp::*;
+    use Sigma::*;
     let g = PauliGroup::new(Root4::R0, Pauli::with_ops([X, Y, Z]));
 
     let h = PauliGroup::new(Root4::R1, Pauli::with_ops([I, Z, X]));
@@ -431,22 +431,22 @@ fn paui_group_06() {
 
 #[test]
 fn pauliop_01() {
-    assert_eq!(PauliOp::try_from(0u32).unwrap(), PauliOp::I);
-    assert_eq!(PauliOp::try_from(1u32).unwrap(), PauliOp::X);
-    assert_eq!(PauliOp::try_from(2u32).unwrap(), PauliOp::Y);
-    assert_eq!(PauliOp::try_from(3u32).unwrap(), PauliOp::Z);
+    assert_eq!(Sigma::try_from(0u32).unwrap(), Sigma::I);
+    assert_eq!(Sigma::try_from(1u32).unwrap(), Sigma::X);
+    assert_eq!(Sigma::try_from(2u32).unwrap(), Sigma::Y);
+    assert_eq!(Sigma::try_from(3u32).unwrap(), Sigma::Z);
 }
 
 #[test]
 fn pauliop_02() {
-    let err = PauliOp::try_from(4u16).unwrap_err();
+    let err = Sigma::try_from(4u16).unwrap_err();
     matches!(err, Error::QubitIndex { .. });
 }
 
 #[test]
 fn pauliop_03() {
-    assert_eq!(u8::from(PauliOp::I), 0);
-    assert_eq!(u8::from(PauliOp::X), 1);
-    assert_eq!(u8::from(PauliOp::Y), 2);
-    assert_eq!(u8::from(PauliOp::Z), 3);
+    assert_eq!(u8::from(Sigma::I), 0);
+    assert_eq!(u8::from(Sigma::X), 1);
+    assert_eq!(u8::from(Sigma::Y), 2);
+    assert_eq!(u8::from(Sigma::Z), 3);
 }

@@ -11,13 +11,13 @@ use serde::{
 use crate::{
     code::qubits::{
         Pauli,
-        PauliOp,
+        Sigma,
     },
     serialize::Encoding,
     terms::SumRepr,
 };
 
-impl Serialize for PauliOp {
+impl Serialize for Sigma {
     fn serialize<S>(
         &self,
         serializer: S,
@@ -29,10 +29,10 @@ impl Serialize for PauliOp {
     }
 }
 
-struct PauliOpVisitor;
+struct SigmaVisitor;
 
-impl<'de> Visitor<'de> for PauliOpVisitor {
-    type Value = PauliOp;
+impl<'de> Visitor<'de> for SigmaVisitor {
+    type Value = Sigma;
 
     fn expecting(
         &self,
@@ -49,10 +49,10 @@ impl<'de> Visitor<'de> for PauliOpVisitor {
         E: serde::de::Error,
     {
         match v {
-            'I' => Ok(PauliOp::I),
-            'X' => Ok(PauliOp::X),
-            'Y' => Ok(PauliOp::Y),
-            'Z' => Ok(PauliOp::Z),
+            'I' => Ok(Sigma::I),
+            'X' => Ok(Sigma::X),
+            'Y' => Ok(Sigma::Y),
+            'Z' => Ok(Sigma::Z),
             _ => Err(E::custom("unknown symbol")),
         }
     }
@@ -65,21 +65,21 @@ impl<'de> Visitor<'de> for PauliOpVisitor {
         E: serde::de::Error,
     {
         match v {
-            "I" => Ok(PauliOp::I),
-            "X" => Ok(PauliOp::X),
-            "Y" => Ok(PauliOp::Y),
-            "Z" => Ok(PauliOp::Z),
+            "I" => Ok(Sigma::I),
+            "X" => Ok(Sigma::X),
+            "Y" => Ok(Sigma::Y),
+            "Z" => Ok(Sigma::Z),
             _ => Err(E::custom("unknown symbol")),
         }
     }
 }
 
-impl<'de> Deserialize<'de> for PauliOp {
+impl<'de> Deserialize<'de> for Sigma {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        deserializer.deserialize_str(PauliOpVisitor)
+        deserializer.deserialize_str(SigmaVisitor)
     }
 }
 
@@ -124,10 +124,10 @@ impl<'de> Visitor<'de> for PauliVisitor {
 
         for (i, ch) in v.chars().enumerate() {
             let pauli = match ch {
-                'I' => Ok(PauliOp::I),
-                'X' => Ok(PauliOp::X),
-                'Y' => Ok(PauliOp::Y),
-                'Z' => Ok(PauliOp::Z),
+                'I' => Ok(Sigma::I),
+                'X' => Ok(Sigma::X),
+                'Y' => Ok(Sigma::Y),
+                'Z' => Ok(Sigma::Z),
                 _ => Err(E::custom(
                     "character must be one of: I, X, Y, Z".to_string(),
                 )),

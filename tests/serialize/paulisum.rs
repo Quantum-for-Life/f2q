@@ -1,7 +1,7 @@
 use f2q::{
     code::qubits::{
         Pauli,
-        PauliOp,
+        Sigma,
     },
     terms::{
         PauliSum,
@@ -42,7 +42,7 @@ fn paulisum_serialize_01() {
 fn pauliisum_serialize_02() {
     let mut repr = SumRepr::new();
 
-    repr.add_term(Pauli::with_ops([PauliOp::X, PauliOp::Y]), 0.2);
+    repr.add_term(Pauli::with_ops([Sigma::X, Sigma::Y]), 0.2);
     let json = serde_json::to_value(&repr).unwrap();
     let expected: serde_json::Value = serde_json::from_str(
         r#"
@@ -69,7 +69,7 @@ fn paulisum_serialize_03() {
     let mut repr = SumRepr::new();
 
     repr.add_term(
-        Pauli::with_ops([PauliOp::I, PauliOp::X, PauliOp::Y, PauliOp::Z]),
+        Pauli::with_ops([Sigma::I, Sigma::X, Sigma::Y, Sigma::Z]),
         0.3,
     );
     let json = serde_json::to_value(&repr).unwrap();
@@ -97,9 +97,9 @@ fn paulisum_serialize_04() {
     let mut repr = SumRepr::new();
 
     repr.add_term(Pauli::identity(), 0.1);
-    repr.add_term(Pauli::with_ops([PauliOp::X, PauliOp::Y]), 0.2);
+    repr.add_term(Pauli::with_ops([Sigma::X, Sigma::Y]), 0.2);
     repr.add_term(
-        Pauli::with_ops([PauliOp::I, PauliOp::X, PauliOp::Y, PauliOp::Z]),
+        Pauli::with_ops([Sigma::I, Sigma::X, Sigma::Y, Sigma::Z]),
         0.3,
     );
     let json = serde_json::to_value(&repr).unwrap();
@@ -165,7 +165,7 @@ fn paulisum_deserialize_02() {
     assert_eq!(repr.len(), 2);
     assert_eq!(repr.coeff(Pauli::identity()).unwrap(), &0.1);
     assert_eq!(
-        repr.coeff(Pauli::with_ops([PauliOp::X, PauliOp::Y]))
+        repr.coeff(Pauli::with_ops([Sigma::X, Sigma::Y]))
             .unwrap(),
         &0.2
     );
@@ -204,16 +204,16 @@ fn pauliisum_deserialize_03() {
     assert_eq!(repr.len(), 3);
     assert_eq!(repr.coeff(Pauli::identity()).unwrap(), &0.19);
     assert_eq!(
-        repr.coeff(Pauli::with_ops([PauliOp::X, PauliOp::Y]))
+        repr.coeff(Pauli::with_ops([Sigma::X, Sigma::Y]))
             .unwrap(),
         &0.2
     );
     assert_eq!(
         repr.coeff(Pauli::with_ops([
-            PauliOp::I,
-            PauliOp::X,
-            PauliOp::Y,
-            PauliOp::Z
+            Sigma::I,
+            Sigma::X,
+            Sigma::Y,
+            Sigma::Z
         ]),)
             .unwrap(),
         &0.3

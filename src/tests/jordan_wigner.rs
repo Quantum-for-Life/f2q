@@ -5,7 +5,7 @@ use crate::{
         fermions::Fermions,
         qubits::{
             Pauli,
-            PauliOp,
+            Sigma,
         },
     },
     map::JordanWigner,
@@ -46,7 +46,7 @@ fn jw_offset() {
 
 #[test]
 fn jw_one_elec_01() {
-    use PauliOp::*;
+    use Sigma::*;
 
     jw_check_mapping(
         &[(1.0, Fermions::try_from((0, 0)).unwrap())],
@@ -84,7 +84,7 @@ fn jw_one_elec_01() {
 
 #[test]
 fn jw_one_elec_02() {
-    use PauliOp::*;
+    use Sigma::*;
 
     jw_check_mapping(
         &[(2.0, Fermions::try_from((0, 1)).unwrap())],
@@ -146,7 +146,7 @@ fn jw_one_elec_03() {
 
 #[test]
 fn jw_two_elec_01() {
-    use PauliOp::*;
+    use Sigma::*;
 
     jw_check_mapping(
         &[(2.0, Fermions::try_from((0, 1, 1, 0)).unwrap())],
@@ -214,7 +214,7 @@ fn jw_two_elec_02() {
 
 #[test]
 fn jw_two_elec_03() {
-    use PauliOp::*;
+    use Sigma::*;
 
     jw_check_mapping(
         &[(4.0, Fermions::try_from((0, 2, 2, 1)).unwrap())],
@@ -249,7 +249,7 @@ fn jw_two_elec_03() {
 
 #[test]
 fn jw_two_elec_04() {
-    use PauliOp::*;
+    use Sigma::*;
 
     jw_check_mapping(
         &[(4.0, Fermions::try_from((0, 3, 3, 2)).unwrap())],
@@ -329,7 +329,7 @@ fn jw_two_elec_05() {
 
 #[test]
 fn jw_two_elec_06() {
-    use PauliOp::*;
+    use Sigma::*;
 
     jw_check_mapping(
         &[(4.0, Fermions::try_from((0, 1, 2, 1)).unwrap())],
