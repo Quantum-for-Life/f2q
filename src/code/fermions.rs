@@ -210,44 +210,16 @@ impl Orbital {
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Cr(pub Orbital);
 
-impl Cr {
-    /// Orbital index.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use f2q::code::fermions::{Orbital, Cr};
-    /// let cr = Cr(Orbital::with_index(1));
-    ///
-    /// assert_eq!(cr.index(), 1);
-    /// ```
-    #[must_use]
-    pub fn index(&self) -> u32 {
-        self.0.index()
-    }
-}
-
 /// Annihilation operator
 ///
 /// A newtype struct representing an annihilation operator.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct An(pub Orbital);
 
-impl An {
-    /// Orbital index.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use f2q::code::fermions::{Orbital, An};
-    /// let an = An(Orbital::with_index(1));
-    ///
-    /// assert_eq!(an.index(), 1);
-    /// ```
-    #[must_use]
-    pub fn index(&self) -> u32 {
-        self.0.index()
-    }
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
+pub enum Majorana {
+    Even(Orbital),
+    Odd(Orbital),
 }
 
 /// Electronic integral with creation (cr) and annihilation (an)
@@ -321,7 +293,7 @@ impl Fermions {
         cr: Cr,
         an: An,
     ) -> Option<Self> {
-        (cr.index() <= an.index()).then_some(Self::One {
+        (cr.0.index() <= an.0.index()).then_some(Self::One {
             cr,
             an,
         })
@@ -370,9 +342,9 @@ impl Fermions {
         cr: (Cr, Cr),
         an: (An, An),
     ) -> Option<Self> {
-        (cr.0.index() < cr.1.index()
-            && an.0.index() > an.1.index()
-            && cr.0.index() <= an.1.index())
+        (cr.0 .0.index() < cr.1 .0.index()
+            && an.0 .0.index() > an.1 .0.index()
+            && cr.0 .0.index() <= an.1 .0.index())
         .then_some(Self::Two {
             cr,
             an,
@@ -431,7 +403,7 @@ impl Display for Fermions {
                 cr,
                 an,
             } => {
-                write!(f, "[{}, {}]", cr.index(), an.index())
+                write!(f, "[{}, {}]", cr.0.index(), an.0.index())
             }
             Fermions::Two {
                 cr,
@@ -439,10 +411,10 @@ impl Display for Fermions {
             } => write!(
                 f,
                 "[{}, {}, {}, {}]",
-                cr.0.index(),
-                cr.1.index(),
-                an.0.index(),
-                an.1.index()
+                cr.0 .0.index(),
+                cr.1 .0.index(),
+                an.0 .0.index(),
+                an.1 .0.index()
             ),
         }
     }

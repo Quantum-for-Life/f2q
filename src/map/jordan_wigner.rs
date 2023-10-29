@@ -33,7 +33,7 @@ macro_rules! impl_tryfrom_map {
                 type Error = Error;
 
                 fn try_from(value: $Typ) -> Result<Self, Self::Error> {
-                    (value.index() < 64)
+                    (value.0.index() < 64)
                         .then_some(Self::$Typ(value.0))
                         .ok_or_else(|| Error::QubitIndex {
                             msg: "orbital index must be within 0..=63".to_string(),

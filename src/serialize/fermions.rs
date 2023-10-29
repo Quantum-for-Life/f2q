@@ -37,8 +37,8 @@ impl Serialize for Fermions {
                 an,
             } => {
                 let mut seq = serializer.serialize_seq(Some(2))?;
-                seq.serialize_element(&cr.index())?;
-                seq.serialize_element(&an.index())?;
+                seq.serialize_element(&cr.0.index())?;
+                seq.serialize_element(&an.0.index())?;
                 seq.end()
             }
             Fermions::Two {
@@ -46,10 +46,10 @@ impl Serialize for Fermions {
                 an,
             } => {
                 let mut seq = serializer.serialize_seq(Some(4))?;
-                seq.serialize_element(&cr.0.index())?;
-                seq.serialize_element(&cr.1.index())?;
-                seq.serialize_element(&an.0.index())?;
-                seq.serialize_element(&an.1.index())?;
+                seq.serialize_element(&cr.0 .0.index())?;
+                seq.serialize_element(&cr.1 .0.index())?;
+                seq.serialize_element(&an.0 .0.index())?;
+                seq.serialize_element(&an.1 .0.index())?;
                 seq.end()
             }
         }
