@@ -38,7 +38,7 @@ fn sumrepr_extend() {
 #[test]
 fn sumrepr_terms() {
     let arr = [(1.0, 1), (2.0, 2)];
-    let mut repr = SumRepr::from(arr);
+    let repr = SumRepr::from(arr);
     assert_eq!(repr.len(), 2);
 
     let mut elems = vec![];
@@ -51,7 +51,7 @@ fn sumrepr_terms() {
 #[test]
 fn stackrepr_terms() {
     let mut iter = [(1.0, 1), (2.0, 2)].into_iter();
-    let mut repr = StackRepr::new(|| iter.next());
+    let repr = StackRepr::new(|| iter.next());
 
     let mut elems = vec![];
     repr.add_to(&mut elems).unwrap();
@@ -61,7 +61,7 @@ fn stackrepr_terms() {
 #[test]
 fn heaprepr_terms() {
     let mut iter = [(1.0, 1), (2.0, 2)].into_iter();
-    let mut repr = HeapRepr::new(|| iter.next());
+    let repr = HeapRepr::new(|| iter.next());
 
     let mut elems = vec![];
     repr.add_to(&mut elems).unwrap();

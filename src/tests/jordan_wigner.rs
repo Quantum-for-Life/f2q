@@ -16,7 +16,7 @@ use crate::{
 };
 
 fn jw_get_result<T: Float>(repr: &SumRepr<T, Fermions>) -> Vec<(T, Pauli)> {
-    let mut jw_map = JordanWigner::new(repr);
+    let jw_map = JordanWigner::new(repr);
     let mut pauli_repr = SumRepr::new();
     jw_map.add_to(&mut pauli_repr).unwrap();
     let mut result = vec![];

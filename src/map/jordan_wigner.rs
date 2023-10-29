@@ -215,7 +215,7 @@ where
     type Error = Error;
 
     fn add_to(
-        &mut self,
+        self,
         repr: &mut impl Extend<(T, Pauli)>,
     ) -> Result<(), Error> {
         for (&coeff, &code) in self.repr.iter() {

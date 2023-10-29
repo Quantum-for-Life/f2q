@@ -430,7 +430,9 @@ impl Display for Fermions {
             Fermions::One {
                 cr,
                 an,
-            } => write!(f, "[{}, {}]", cr.index(), an.index()),
+            } => {
+                write!(f, "[{}, {}]", cr.index(), an.index())
+            }
             Fermions::Two {
                 cr,
                 an,
